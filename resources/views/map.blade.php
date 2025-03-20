@@ -211,5 +211,102 @@
 
             drawnItems.addLayer(layer);
         });
+
+        // GeoJSON Points
+        var point = L.geoJson(null, {
+            onEachFeature: function(feature, layer) {
+                var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Dibuat: " + feature.properties.created_at;
+                layer.on({
+                    click: function(e) {
+                        point.bindPopup(popupContent);
+                    },
+                    mouseover: function(e) {
+                        point.bindTooltip(feature.properties.name);
+                    },
+                });
+            },
+        });
+        $.getJSON("{{ route('api.points') }}", function(data) {
+            point.addData(data);
+            map.addLayer(point);
+        });
+
+        // GeoJSON Polylines
+        var polyline = L.geoJson(null, {
+            style: function(feature) {
+                return {
+                    color: "#e34040",
+                    weight: 3,
+                    opacity: 1,
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Panjang: " + feature.properties.lenght_km + "<br>" +
+                    "Dibuat: " + feature.properties.created_at;
+                layer.on({
+                    click: function(e) {
+                        layer.bindPopup(popupContent).openPopup();
+                    },
+                    mouseover: function(e) {
+                        layer.bindTooltip(feature.properties.name).openTooltip();
+                    },
+                });
+            },
+        });
+
+        // Memuat data polylines dari API
+        $.getJSON("{{ route('api.polylines') }}", function(data) {
+            polyline.addData(data);
+            map.addLayer(polyline);
+        });
+
+        // GeoJSON Polygons
+        var polygon = L.geoJson(null, {
+            style: function(feature) {
+                return {
+                    color: "#5b2a46",
+                    fillColor: "#d14d97",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.2,
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Luas: " + feature.properties.luas_hektar + "<br>" +
+                    "Dibuat: " + feature.properties.created_at;
+                layer.on({
+                    click: function(e) {
+                        layer.bindPopup(popupContent).openPopup();
+                    },
+                    mouseover: function(e) {
+                        layer.bindTooltip(feature.properties.name).openTooltip();
+                    },
+                });
+            },
+        });
+
+        // Memuat data polygon dari API
+        $.getJSON("{{ route('api.polygon') }}", function(data) {
+            polygon.addData(data);
+            map.addLayer(polygon);
+        });
+
+        // Pastikan variabel 'point' sudah ada atau hapus jika tidak digunakan
+        var overlayMaps = {
+            "Points": point,  // Hapus ini jika tidak ada data point
+            "Polylines": polyline,
+            "Polygons": polygon
+        };
+
+        // Menambahkan kontrol layer ke peta
+        L.control.layers(null, overlayMaps, {
+            position: 'topright'
+        }).addTo(map);
     </script>
 @endsection
