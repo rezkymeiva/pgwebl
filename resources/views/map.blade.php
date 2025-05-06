@@ -45,8 +45,9 @@
                         <div class="mb-3">
                             <label for="image" class="form-label">Photo</label>
                             <input type="file" class="form-control" id="image_point" name="image"
-                            onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
-                            <img src="" alt="" id="preview-image-point" class="img-thumbnail" width="250">
+                                onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-point" class="img-thumbnail"
+                                width="250">
                         </div>
 
 
@@ -91,8 +92,9 @@
                         <div class="mb-3">
                             <label for="image" class="form-label">Photo</label>
                             <input type="file" class="form-control" id="image_polyline" name="image"
-                            onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
-                            <img src="" alt="" id="preview-image-polyline" class="img-thumbnail" width="250">
+                                onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
+                                width="250">
                         </div>
 
 
@@ -107,7 +109,8 @@
     </div>
 
     <!-- Modal Create Polygon-->
-    <div class="modal fade" id="createpolygonModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="createpolygonModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -137,8 +140,9 @@
                         <div class="mb-3">
                             <label for="image" class="form-label">Photo</label>
                             <input type="file" class="form-control" id="image_polygon" name="image"
-                            onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
-                            <img src="" alt="" id="preview-image-polygon" class="img-thumbnail" width="250">
+                                onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
+                                width="250">
                         </div>
 
 
@@ -236,13 +240,23 @@
             drawnItems.addLayer(layer);
         });
 
-        // GeoJSON Points
+        //GeoJSON Points
         var point = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
+
+                var routedelete = "{{ route('points.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='{{asset('storage/images/')}}/" + feature.properties.image + "' width='200' alt=''>";
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' width='200' alt=''>" + "<br>" +
+                    "<form method='POST' action='" + routedelete + "'>" +
+                    '@csrf' + '@method('DELETE')' +
+                    "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted`)'><i class='fa-solid fa-trash'></i></button>" +
+                    "</form>";
+
                 layer.on({
                     click: function(e) {
                         point.bindPopup(popupContent);
@@ -268,11 +282,20 @@
                 };
             },
             onEachFeature: function(feature, layer) {
+
+                var routedelete = "{{ route('polylines.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Panjang: " + feature.properties.lenght_km + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='{{asset('storage/images/')}}/" + feature.properties.image + "' width='200' alt=''>";
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' width='200' alt=''>" + "<br>" +
+                    "<form method='POST' action='" + routedelete + "'>" +
+                    '@csrf' + '@method('DELETE')' +
+                    "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted?`)'><i class='fa-solid fa-trash'></i></button>" +
+                    "</form>";
                 layer.on({
                     click: function(e) {
                         layer.bindPopup(popupContent).openPopup();
@@ -302,11 +325,20 @@
                 };
             },
             onEachFeature: function(feature, layer) {
+
+                var routedelete = "{{ route('polygon.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Luas: " + feature.properties.luas_hektar + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='{{asset('storage/images/')}}/" + feature.properties.image + "' width='200' alt=''>";
+                    "<img src='{{ asset('storage/images/') }}/" + feature.properties.image +
+                    "' width='200' alt=''>"+ "<br>" +
+                    "<form method='POST' action='" + routedelete + "'>" +
+                    '@csrf' + '@method('DELETE')' +
+                    "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted?`)'><i class='fa-solid fa-trash'></i></button>" +
+                    "</form>";
                 layer.on({
                     click: function(e) {
                         layer.bindPopup(popupContent).openPopup();
@@ -326,7 +358,7 @@
 
         // Pastikan variabel 'point' sudah ada atau hapus jika tidak digunakan
         var overlayMaps = {
-            "Points": point,  // Hapus ini jika tidak ada data point
+            "Points": point, // Hapus ini jika tidak ada data point
             "Polylines": polyline,
             "Polygons": polygon
         };

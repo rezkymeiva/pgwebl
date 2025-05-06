@@ -14,7 +14,7 @@ class PolygonModel extends Model
     public function geojson_polygon()
     {
         $polygon = $this
-            ->select(DB::raw('st_asgeojson(geom) as geom, st_area(geom, true) as luas_m2, st_area(geom, true)/1000000 as luas_km2, st_area(geom,true)/10000 as luas_hektar, name, description, created_at, updated_at, image'))
+            ->select(DB::raw('id, st_asgeojson(geom) as geom, st_area(geom, true) as luas_m2, st_area(geom, true)/1000000 as luas_km2, st_area(geom,true)/10000 as luas_hektar, name, description, created_at, updated_at, image'))
             ->get();
 
         $geojson = [
@@ -27,6 +27,7 @@ class PolygonModel extends Model
                 'type' => 'Feature',
                 'geometry' => json_decode($p->geom),
                 'properties' => [
+                    'id' =>$p->id,
                     'name' => $p->name,
                     'description' => $p->description,
                     'luas_m2' => $p->luas_m2,
