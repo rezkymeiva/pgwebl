@@ -247,15 +247,27 @@
                 var routedelete = "{{ route('points.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
+                var routeedit = "{{ route('points.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
                     "' width='200' alt=''>" + "<br>" +
+                    "<div class='row mt-4'>" +
+                    "<div class ='col-6 text-start'>" +
+                    "<a href ='" + routeedit +
+                    "'class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i></a>" +
+                    "</div>" +
+                    "<div class='col-6 text-end'>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted`)'><i class='fa-solid fa-trash'></i></button>" +
-                    "</form>";
+                    "</form>" +
+                    "</div>" +
+                    "</div>" + "<br>" + "<p>Dibuat:" + feature.
+                        properties.user_created +"</p>";
 
                 layer.on({
                     click: function(e) {
@@ -286,16 +298,29 @@
                 var routedelete = "{{ route('polylines.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
+                var routeedit = "{{ route('polylines.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
-                    "Panjang: " + feature.properties.lenght_km + "<br>" +
+                    "Panjang: " + feature.properties.length_km + " km<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
                     "' width='200' alt=''>" + "<br>" +
+                    "<div class='row mt-4'>" +
+                    "<div class='col-6 text-start'>" +
+                    "<a href='" + routeedit +
+                    "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i></a>" +
+                    "</div>" +
+                    "<div class='col-6 text-end'>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted?`)'><i class='fa-solid fa-trash'></i></button>" +
-                    "</form>";
+                    "</form>" +
+                    "</div>" +
+                    "</div>" + "<br>" + "<p>Dibuat:" + feature.
+                        properties.user_created +"</p>";
+
                 layer.on({
                     click: function(e) {
                         layer.bindPopup(popupContent).openPopup();
@@ -329,16 +354,29 @@
                 var routedelete = "{{ route('polygon.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
+                var routeedit = "{{ route('polygon.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Luas: " + feature.properties.luas_hektar + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='{{ asset('storage/images/') }}/" + feature.properties.image +
-                    "' width='200' alt=''>"+ "<br>" +
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' width='200' alt=''>" + "<br>" +
+                    "<div class='row mt-4'>" +
+                    "<div class='col-6 text-start'>" +
+                    "<a href='" + routeedit +
+                    "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i></a>" +
+                    "</div>" +
+                    "<div class='col-6 text-end'>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`sure it will be deleted?`)'><i class='fa-solid fa-trash'></i></button>" +
-                    "</form>";
+                    "</form>" +
+                    "</div>" +
+                    "</div>" + "<br>" + "<p>Dibuat:" + feature.
+                        properties.user_created +"</p>";
+
                 layer.on({
                     click: function(e) {
                         layer.bindPopup(popupContent).openPopup();

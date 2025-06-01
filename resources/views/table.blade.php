@@ -1,40 +1,31 @@
 @extends('layout.template')
 
 @section('content')
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>NIM</th>
-            <th>Kelas</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-                <td>1</td>
-                <td>Rezky</td>
-                <td>513284</td>
-                <td>A</td>
-        </tr>
-        <tr>
-                <td>2</td>
-                <td>Meiva</td>
-                <td>513284</td>
-                <td>A</td>
-        </tr>
-        <tr>
-                <td>3</td>
-                <td>Anisa</td>
-                <td>513284</td>
-                <td>A</td>
-        </tr>
-        <tr>
-                <td>4</td>
-                <td>Alim</td>
-                <td>514254</td>
-                <td>A</td>
-        </tr>
-    </tbody>
-</table>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Name</th>
+                <th>Descripton</th>
+                <th>image</th>
+                <th>Created at</th>
+                <th>Update at</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($points as $p)
+                <tr>
+                    <td>{{$p->id }}</td>
+                    <td>{{$p->name }}</td>
+                    <td>{{$p->description}}</td>
+                    <td>
+                        <img src="{{ asset('storage/images/'.$p->image)}}" alt=""
+                        width="200" title="{{$p->image}}">
+                    </td>
+                    <td>{{$p->created_at}}</td>
+                    <td>{{$p->updated_at}}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endsection
