@@ -10,19 +10,19 @@
             <!-- Menu Kiri -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a>
+                    <a class="nav-link" href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('map') }}"><i class="fa-solid fa-map-location-dot"></i> Map</a>
+                    <a class="nav-link" href="{{ route('map') }}"><i class="fa-solid fa-map-location-dot"></i> Peta Kota</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('table') }}"><i class="fa-solid fa-table"></i> Table</a>
+                    <a class="nav-link" href="{{ route('table') }}"><i class="fa-solid fa-table"></i> Rekap Data</a>
                 </li>
                 @auth
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <i class="fa-solid fa-database"></i> Data
+                        <i class="fa-solid fa-database"></i> Kelola Data
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('api.points') }}" target="_blank">Points</a></li>

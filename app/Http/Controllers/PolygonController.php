@@ -11,9 +11,7 @@ class PolygonController extends Controller
     {
         $this->polygon = new PolygonModel();
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $data = [
@@ -23,17 +21,11 @@ class PolygonController extends Controller
         return view('map', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // Validate data
@@ -42,13 +34,23 @@ class PolygonController extends Controller
                 'name' => 'required|unique:polygon,name',
                 'description' => 'required',
                 'geom_polygon' => 'required',
-                'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:10000'
+                'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:10000',
+                'username' => 'required',
+                'land_use_change' => 'required',
+                'contact_person' => 'required',
+                'surat_permohonan' => 'nullable|mimes:pdf|max:10000',
+                'foto_ktp' => 'nullable|mimes:jpeg,png,jpg|max:5000',
+                'sertifikat_tanah' => 'nullable|mimes:pdf,jpeg,png,jpg|max:10000',
+                'foto_lokasi' => 'nullable|mimes:jpeg,png,jpg|max:5000',
             ],
             [
                 'name.required' => 'Name is required',
                 'name.unique' => 'Name already exist',
                 'description.required' => 'Description is required',
                 'geom_polygon.required' => 'Geometry polygon is required',
+                'username.required' => 'Username is required',
+                'land_use_change.required' => 'Land Use Change is required',
+                'contact_person.required' => 'Contact Person is required',
             ]
         );
 
@@ -57,47 +59,47 @@ class PolygonController extends Controller
             mkdir('./storage/images', 0777);
         }
 
-        //Get image file
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name_image = time() . "_polygon." . strtolower($image->getClientOriginalExtension());
-            $image->move('storage/images', $name_image);
-        } else {
-            $name_image = null;
-        }
+        // Handle image file
+        $name_image = $this->uploadFile($request, 'image');
 
+        // Handle document uploads
+        $surat_permohonan = $this->uploadFile($request, 'surat_permohonan');
+        $foto_ktp = $this->uploadFile($request, 'foto_ktp');
+        $sertifikat_tanah = $this->uploadFile($request, 'sertifikat_tanah');
+        $foto_lokasi = $this->uploadFile($request, 'foto_lokasi');
 
         $data = [
             'geom' => $request->geom_polygon,
             'name' => $request->name,
             'description' => $request->description,
             'image' => $name_image,
+            'username' => $request->username,
+            'land_use_change' => $request->land_use_change,
+            'description_suggestion' => $request->description_suggestion,
+            'surat_permohonan' => $surat_permohonan,
+            'foto_ktp' => $foto_ktp,
+            'sertifikat_tanah' => $sertifikat_tanah,
+            'foto_lokasi' => $foto_lokasi,
+            'contact_person' => $request->contact_person,
+            'geometry' => $request->geom_polygon,
+            'type' => 'Polygon',
+            'status' => 'pending',
             'user_id' => auth()->user()->id,
-
         ];
-
 
         //Create data
         if (!$this->polygon->create($data)) {
             return redirect()->route('map')->with('error', 'Polygon failed to add');
         }
 
-
-        //REdirect to map
         return redirect()->route('map')->with('success', 'Polygon has been added');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $data = [
@@ -107,9 +109,6 @@ class PolygonController extends Controller
         return view('edit-polygon', $data);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         // Validate data
@@ -118,76 +117,104 @@ class PolygonController extends Controller
                 'name' => 'required|unique:polygon,name,' . $id,
                 'description' => 'required',
                 'geom_polygon' => 'required',
-                'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:10000'
+                'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:10000',
+                'username' => 'required',
+                'land_use_change' => 'required',
+                'contact_person' => 'required',
+                'surat_permohonan' => 'nullable|mimes:pdf|max:10000',
+                'foto_ktp' => 'nullable|mimes:jpeg,png,jpg|max:5000',
+                'sertifikat_tanah' => 'nullable|mimes:pdf,jpeg,png,jpg|max:10000',
+                'foto_lokasi' => 'nullable|mimes:jpeg,png,jpg|max:5000',
             ],
             [
                 'name.required' => 'Name is required',
                 'name.unique' => 'Name already exist',
                 'description.required' => 'Description is required',
                 'geom_polygon.required' => 'Geometry polygon is required',
+                'username.required' => 'Username is required',
+                'land_use_change.required' => 'Land Use Change is required',
+                'contact_person.required' => 'Contact Person is required',
             ]
         );
 
-        //Create images directory
         if (!is_dir('storage/images')) {
             mkdir('./storage/images', 0777);
         }
 
-        //Get old image file name
-        $old_image = $this->polygon->find($id)->image;
+        $polygon = $this->polygon->find($id);
 
-        //Get image file
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name_image = time() . "_polygon." . strtolower($image->getClientOriginalExtension());
-            $image->move('storage/images', $name_image);
+        // Handle image update
+        $name_image = $this->uploadFile($request, 'image', $polygon->image);
 
-            //Delete old image file
-            if ($old_image != null) {
-                if (file_exists('./storage/images/' . $old_image)) {
-                    unlink('./storage/images/' . $old_image);
-                }
-            }
-        } else {
-            $name_image = $old_image;
-        }
+        // Handle document updates
+        $surat_permohonan = $this->uploadFile($request, 'surat_permohonan', $polygon->surat_permohonan);
+        $foto_ktp = $this->uploadFile($request, 'foto_ktp', $polygon->foto_ktp);
+        $sertifikat_tanah = $this->uploadFile($request, 'sertifikat_tanah', $polygon->sertifikat_tanah);
+        $foto_lokasi = $this->uploadFile($request, 'foto_lokasi', $polygon->foto_lokasi);
 
         $data = [
             'geom' => $request->geom_polygon,
             'name' => $request->name,
             'description' => $request->description,
             'image' => $name_image,
+            'username' => $request->username,
+            'land_use_change' => $request->land_use_change,
+            'description_suggestion' => $request->description_suggestion,
+            'surat_permohonan' => $surat_permohonan,
+            'foto_ktp' => $foto_ktp,
+            'sertifikat_tanah' => $sertifikat_tanah,
+            'foto_lokasi' => $foto_lokasi,
+            'contact_person' => $request->contact_person,
+            'geometry' => $request->geom_polygon,
+            'type' => 'Polygon',
         ];
 
-
-        //Create data
-        if (!$this->polygon->find($id)->update($data)) {
+        if (!$polygon->update($data)) {
             return redirect()->route('map')->with('error', 'Polygon failed to update');
         }
 
-
-        //REdirect to map
-        return redirect()->route('map')->with('success', 'Polygon has been added');
+        return redirect()->route('map')->with('success', 'Polygon has been updated');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $imagefile = $this->polygon->find($id)->image;
+        $polygon = $this->polygon->find($id);
 
-        if (!$this->polygon->destroy($id)) {
-            return redirect()->route('map')->with('error', 'Polygon failed to deleted');
-        }
+        $this->deleteFile($polygon->image);
+        $this->deleteFile($polygon->surat_permohonan);
+        $this->deleteFile($polygon->foto_ktp);
+        $this->deleteFile($polygon->sertifikat_tanah);
+        $this->deleteFile($polygon->foto_lokasi);
 
-        //Delete image file
-        if ($imagefile != null) {
-            if (file_exists('./storage/images/' . $imagefile)) {
-                unlink('./storage/images/' . $imagefile);
-            }
+        if (!$polygon->delete()) {
+            return redirect()->route('map')->with('error', 'Polygon failed to delete');
         }
 
         return redirect()->route('map')->with('success', 'Polygon has been deleted');
+    }
+
+    private function uploadFile($request, $field, $oldFile = null)
+    {
+        if ($request->hasFile($field)) {
+            $file = $request->file($field);
+            $fileName = time() . "_" . $field . "." . strtolower($file->getClientOriginalExtension());
+            $file->move('storage/images', $fileName);
+
+            // Delete old file
+            if ($oldFile && file_exists('./storage/images/' . $oldFile)) {
+                unlink('./storage/images/' . $oldFile);
+            }
+
+            return $fileName;
+        }
+
+        return $oldFile;
+    }
+
+    private function deleteFile($fileName)
+    {
+        if ($fileName && file_exists('./storage/images/' . $fileName)) {
+            unlink('./storage/images/' . $fileName);
+        }
     }
 }
